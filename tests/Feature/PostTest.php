@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Author;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,7 +26,7 @@ class PostTest extends TestCase
         $response = $this->getJson('/api/posts');
 
         // 3) Asserting that response has a 200 (success) status code
-        $response->assertStatus(200)
+        $response->assertOk()
             // 4) assertJson allows us to assert things about the json itself
             // We pass in a callback function that is given an AssertableJson object
             ->assertJson(function (AssertableJson $json) {
@@ -52,6 +53,78 @@ class PostTest extends TestCase
                                     ]);
                             });
                     }); 
+            });
+    }
+    
+
+
+
+
+
+
+    public function test_add_noData()
+    {
+        $response = $this->postJson('/api/posts', []);
+
+        $response->assertStatus(422)
+            ->assertInvalid(['title', 'content', 'featured_image', 'author_id']);
+    }
+
+    public function test_add_invalidData()
+    {
+        $response = $this->postJson('/api/posts', [
+            'title' => ['blog post title'],
+            'content' => '',
+            'featured_image' => 'not an image lol',
+            'author_id' => 9999
+        ]);
+
+        $response->assertStatus(422)
+            ->assertInvalid(['title', 'content', 'featured_image', 'author_id']);
+    }
+
+    public function test_add_validInDb()
+    {
+        $author = Author::factory()->create();
+
+        $response = $this->postJson('/api/posts', [
+            'title' => 'post title',
+            'content' => 'post description needs to be atleast 20 characters',
+            'featured_image' => 'https://website.com/image.jpg',
+            'author_id' => $author->id
+        ]);
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('posts', [
+            'title' => 'post title',
+            'content' => 'post description needs to be atleast 20 characters',
+            'featured_image' => 'https://website.com/image.jpg',
+            'author_id' => $author->id
+        ]);
+    }
+
+    public function test_add_validResponseFormat()
+    {
+        $author = Author::factory()->create();
+
+        $response = $this->postJson('/api/posts', [
+            'title' => 'post title',
+            'content' => 'post description needs to be atleast 20 characters',
+            'featured_image' => 'https://website.com/image.jpg',
+            'author_id' => $author->id
+        ]);
+
+        $response->assertOk()
+            ->assertJson(function (AssertableJson $json) {
+                $json->hasAll(['message', 'data'])
+                    ->has('data', function (AssertableJson $json) {
+                        $json->hasAll(['insertedId'])
+                            ->whereAllType([
+                                'insertedId' => 'integer'
+                            ])
+                            ->where('insertedId', 1);
+                    });
             });
     }
 }

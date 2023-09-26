@@ -24,7 +24,7 @@ return new class extends Migration
     {
         Schema::table('posts', function (Blueprint $table) {
             $table->dropColumn('author_id');
-            $table->string('author');
+            $table->string('author')->nullable();
         });
     }
 };

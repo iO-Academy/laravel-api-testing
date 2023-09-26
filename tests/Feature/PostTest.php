@@ -39,10 +39,18 @@ class PostTest extends TestCase
                                 'title' => 'string',
                                 'content' => 'string',
                                 'featured_image' => 'string',
-                                'author' => 'string',
                                 'created_at' => 'string',
                                 'updated_at' => 'string'
-                            ]);
+                            ])
+                            // Using has to scope into the author object
+                            ->has('author', function (AssertableJson $json) {
+                                $json->hasAll(['id', 'first_name', 'last_name'])
+                                    ->whereAllType([
+                                        'id' => 'integer',
+                                        'first_name' => 'string',
+                                        'last_name' => 'string'
+                                    ]);
+                            });
                     }); 
             });
     }

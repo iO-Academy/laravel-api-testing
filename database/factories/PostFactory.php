@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Author;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,7 @@ class PostFactory extends Factory
             'title' => $this->faker->text(50),
             'content' => $this->faker->text(200),
             'featured_image' => $this->faker->imageUrl(),
-            'author' => $this->faker->name()
+            'author_id' => Author::factory()
         ];
     }
 }

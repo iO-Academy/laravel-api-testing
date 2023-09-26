@@ -10,7 +10,7 @@ class PostController extends Controller
     public function getAll()
     {
         return response()->json([
-            'data' => Post::all(),
+            'data' => Post::with('author')->get(),
             'message' => 'success'
         ]);
     }

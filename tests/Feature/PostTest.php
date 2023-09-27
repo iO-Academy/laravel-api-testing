@@ -56,12 +56,6 @@ class PostTest extends TestCase
             });
     }
     
-
-
-
-
-
-
     public function test_add_noData()
     {
         $response = $this->postJson('/api/posts', []);

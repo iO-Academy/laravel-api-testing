@@ -15,6 +15,70 @@ class PostController extends Controller
         ]);
     }
 
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Route for the posts view page
+     */
+    public function postsPage()
+    {
+        $posts = Post::all();
+        // When we use the view function
+        // the first argument is the name of the view
+        // we want to display
+        // This does not include the .blade.php extension
+
+        // The second argument is an assoc array of data
+        // Blade will take the keys from this array, and make
+        // them available in the template file as variables
+        return view('posts', [
+            'title' => 'My amazing blog posts page',
+            'subtitle' => 'Posts by Ash',
+            'posts' => $posts
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function add(Request $request)
     {
         $request->validate([
